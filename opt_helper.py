@@ -445,7 +445,7 @@ def plot_fig_with_bounds(
     return
 
 
-def plot_result(variable, nego_off=None, nego_on=None, k=0):
+def plot_result(variable, save_path, nego_off=None, nego_on=None, k=0):
     """
     variable can be a list of string or a single string.
 
@@ -463,7 +463,7 @@ def plot_result(variable, nego_off=None, nego_on=None, k=0):
     if isinstance(variable, list):
         for i in range(len(variable)):
             try:
-                plot_result(variable[i], nego_off=nego_off, nego_on=nego_on, k=k)
+                plot_result(variable[i], save_path, nego_off=nego_off, nego_on=nego_on, k=k)
             except:
                 print("Error:", variable[i])
     else:
@@ -486,9 +486,11 @@ def plot_result(variable, nego_off=None, nego_on=None, k=0):
         plt.grid()
         plt.ylabel(variable)
 
+        plt.savefig(save_path)
+
 
 def plot_training_curve(
-    data, mertic, submission_file_name, start=None, end=None, return_data=False
+    data, mertic, submission_file_name, save_path, start=None, end=None, return_data=False
 ):
     """
     plotting mertics collected in a dictionary from the training procedure. Below are some of the available metrics:
@@ -534,7 +536,8 @@ def plot_training_curve(
     plt.grid()
     plt.xlabel("iteration")
     plt.ylabel(mertic)
-    plt.show()
+
+    plt.savefig(save_path)
     if return_data:
         return data
     return
