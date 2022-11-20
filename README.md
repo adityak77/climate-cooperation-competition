@@ -18,6 +18,31 @@ In this competition, you will design negotiation protocols and contracts between
 
 We recommend that GPU users use ``warp_drive`` and CPU users use ``rllib``.
 
+# Running Locally Troubleshooting (Aditya's Machines)
+
+After creating a conda environment, install `pycuda` from `conda-forge` instead of pip.
+
+```
+conda create --name climate_competition python=3.7
+conda install pycuda -c conda-forge
+pip install -r requirements.txt
+pip install rl_warp_drive==1.7.0
+pip install codecarbon
+```
+
+Make sure nvcc paths are correct:
+
+```
+export LD_LIBRARY_PATH="/usr/local/cuda-{CUDA_VERSION}/lib64:$LD_LIBRARY_PATH"
+export PATH="/usr/local/cuda-{CUDA_VERSION}/bin:$PATH"
+```
+
+and then you can run 
+
+```
+python colab_training.py
+```
+
 ## Tutorial
 - For all information and the leaderboard, see [our official website](https://www.ai4climatecoop.org).
 - [How to Get Started](getting_started.ipynb)
