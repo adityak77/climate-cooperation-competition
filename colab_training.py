@@ -17,7 +17,7 @@ from opt_helper import save, load, plot_training_curve, plot_result
 tracker = EmissionsTracker()
 tracker.start()
 
-device = 'cpu' # 'gpu'
+device = 'gpu' # 'gpu'
 
 if device == 'gpu':
     import train_with_warp_drive as gpu_trainer
