@@ -31,6 +31,7 @@ from rice_helpers import (
     get_global_carbon_mass,
     get_global_temperature,
     get_gross_output,
+    get_gross_output_increasing_returns,
     get_investment,
     get_labor,
     get_land_emissions,
@@ -202,6 +203,15 @@ class Rice:
                     constants[0]["xM_UP_0"],
                     constants[0]["xM_LO_0"],
                 ],
+            ),
+            timestep=self.timestep,
+            norm=1e4,
+        )
+
+        self.set_global_state(
+            key='mitigation_returns',
+            value=np.array(
+                [constants[region_id]['xb_0'] for region_id in range(self.num_regions)]
             ),
             timestep=self.timestep,
             norm=1e4,
@@ -403,6 +413,7 @@ class Rice:
             "consumption_all_regions",
             "savings_all_regions",
             "mitigation_rate_all_regions",
+            "mitigation_returns",
             "max_export_limit_all_regions",
             "current_balance_all_regions",
             "tariffs",
@@ -791,6 +802,10 @@ class Rice:
                 region_id=region_id,
             )
 
+            mitigation_returns = self.get_global_state(
+                'mitigation_returns', timestep=self.timestep - 1, region_id=region_id
+            ) * 1.1
+
             # constants
             const = constants[region_id]
 
@@ -814,7 +829,7 @@ class Rice:
                 const["xgamma"],
             )
 
-            gross_output = get_gross_output(damages, abatement_cost, production)
+            gross_output = get_gross_output_increasing_returns(damages, abatement_cost, production, mitigation_returns)
             gov_balance_prev = gov_balance_prev * (1 + self.balance_interest_rate)
             investment = get_investment(savings, gross_output)
 
@@ -857,6 +872,9 @@ class Rice:
                 abatement_cost,
                 self.timestep,
                 region_id=region_id,
+            )
+            self.set_global_state(
+                'mitigation_returns', mitigation_returns, self.timestep, region_id=region_id
             )
             self.set_global_state(
                 "production_all_regions", production, self.timestep, region_id=region_id

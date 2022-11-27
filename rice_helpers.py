@@ -89,6 +89,10 @@ def get_gross_output(damages, abatement_cost, production):
     damages and abatement cost."""
     return damages * (1 - abatement_cost) * production
 
+def get_gross_output_increasing_returns(damages, abatement_cost, production, mitigation_returns):
+    """Compute the gross production output, taking into account
+    damages and abatement cost."""
+    return damages * (1 - abatement_cost + mitigation_returns) * production
 
 def get_investment(savings, gross_output):
     """Obtain the investment cost."""
