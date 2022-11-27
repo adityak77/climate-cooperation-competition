@@ -245,6 +245,18 @@ class Rice:
             timestep=self.timestep,
             norm=1e-1,
         )
+        
+        self.set_global_state(
+            key="private_goods_scale_factor",
+            value=np.array(
+                [
+                    constants[region_id]["xb_0"]
+                    for region_id in range(self.num_regions)
+                ]
+            ),
+            timestep=self.timestep,
+            norm=1e-1, # what should the correct value of norm be ?????
+        )
 
         for key in [
             "global_exogenous_emissions",

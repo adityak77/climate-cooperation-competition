@@ -73,9 +73,13 @@ extern "C"
     __device__ float get_gross_output(
         float damages,
         float abatement_cost,
-        float production)
+        float production,
+        float private_goods_scale_factor,
+        int timestep)
     {
-        return damages * (1 - abatement_cost) * production;
+        float private_goods = private_goods_scale_factor * float(sqrt(double(timestep)));
+        return damages * (1 - abatement_cost) * production + 
+               private_goods * abatement_cost * production;
     }
 
     __device__ float get_investment(
@@ -349,6 +353,7 @@ extern "C"
         float *minimum_mitigation_rate_all_regions,
         float *mitigation_cost_all_regions,
         float *mitigation_rate_all_regions,
+        float *private_goods_scale_factor,
         float *production_all_regions,
         float *production_factor_all_regions,
         float *promised_mitigation_rate,
@@ -380,6 +385,7 @@ extern "C"
         float minimum_mitigation_rate_all_regions_norm,
         float mitigation_cost_all_regions_norm,
         float mitigation_rate_all_regions_norm,
+        float private_goods_scale_factor_norm,
         float production_all_regions_norm,
         float production_factor_all_regions_norm,
         float promised_mitigation_rate_norm,
@@ -571,6 +577,11 @@ extern "C"
         obs_arr_idx_offset += 1;
 
         observations_arr[obs_arr_idx_offset] =
+            private_goods_scale_factor[kAgentArrayIdx] /
+            private_goods_scale_factor_norm;
+        obs_arr_idx_offset += 1;
+
+        observations_arr[obs_arr_idx_offset] =
             mitigation_cost_all_regions[kAgentArrayIdx] /
             mitigation_cost_all_regions_norm;
         obs_arr_idx_offset += 1;
@@ -705,6 +716,7 @@ extern "C"
         float *minimum_mitigation_rate_all_regions,
         float *mitigation_cost_all_regions,
         float *mitigation_rate_all_regions,
+        float *private_goods_scale_factor,
         float *production_all_regions,
         float *production_factor_all_regions,
         float *promised_mitigation_rate,
@@ -736,6 +748,7 @@ extern "C"
         float minimum_mitigation_rate_all_regions_norm,
         float mitigation_cost_all_regions_norm,
         float mitigation_rate_all_regions_norm,
+        float private_goods_scale_factor_norm,
         float production_all_regions_norm,
         float production_factor_all_regions_norm,
         float promised_mitigation_rate_norm,
@@ -833,6 +846,7 @@ extern "C"
                 minimum_mitigation_rate_all_regions,
                 mitigation_cost_all_regions,
                 mitigation_rate_all_regions,
+                private_goods_scale_factor,
                 production_all_regions,
                 production_factor_all_regions,
                 promised_mitigation_rate,
@@ -864,6 +878,7 @@ extern "C"
                 minimum_mitigation_rate_all_regions_norm,
                 mitigation_cost_all_regions_norm,
                 mitigation_rate_all_regions_norm,
+                private_goods_scale_factor_norm,
                 production_all_regions_norm,
                 production_factor_all_regions_norm,
                 promised_mitigation_rate_norm,
@@ -926,6 +941,7 @@ extern "C"
         float *minimum_mitigation_rate_all_regions,
         float *mitigation_cost_all_regions,
         float *mitigation_rate_all_regions,
+        float *private_goods_scale_factor,
         float *production_all_regions,
         float *production_factor_all_regions,
         float *promised_mitigation_rate,
@@ -957,6 +973,7 @@ extern "C"
         float minimum_mitigation_rate_all_regions_norm,
         float mitigation_cost_all_regions_norm,
         float mitigation_rate_all_regions_norm,
+        float private_goods_scale_factor_norm,
         float production_all_regions_norm,
         float production_factor_all_regions_norm,
         float promised_mitigation_rate_norm,
@@ -1076,6 +1093,7 @@ extern "C"
                 minimum_mitigation_rate_all_regions,
                 mitigation_cost_all_regions,
                 mitigation_rate_all_regions,
+                private_goods_scale_factor,
                 production_all_regions,
                 production_factor_all_regions,
                 promised_mitigation_rate,
@@ -1107,6 +1125,7 @@ extern "C"
                 minimum_mitigation_rate_all_regions_norm,
                 mitigation_cost_all_regions_norm,
                 mitigation_rate_all_regions_norm,
+                private_goods_scale_factor_norm,
                 production_all_regions_norm,
                 production_factor_all_regions_norm,
                 promised_mitigation_rate_norm,
@@ -1196,6 +1215,7 @@ extern "C"
         const float *xT_AT_0,
         const float *xT_LO_0,
         const float *xK_0,
+        const float *xb_0,
         float *abatement_cost_all_regions,
         int *activity_timestep,
         float *capital_all_regions,
@@ -1215,6 +1235,7 @@ extern "C"
         float *minimum_mitigation_rate_all_regions,
         float *mitigation_cost_all_regions,
         float *mitigation_rate_all_regions,
+        float *private_goods_scale_factor,
         float *production_all_regions,
         float *production_factor_all_regions,
         float *promised_mitigation_rate,
@@ -1250,6 +1271,7 @@ extern "C"
         float minimum_mitigation_rate_all_regions_norm,
         float mitigation_cost_all_regions_norm,
         float mitigation_rate_all_regions_norm,
+        float private_goods_scale_factor_norm,
         float production_all_regions_norm,
         float production_factor_all_regions_norm,
         float promised_mitigation_rate_norm,
@@ -1407,7 +1429,9 @@ extern "C"
             gross_output_all_regions[kAgentArrayIdx] = get_gross_output(
                 damages_all_regions[kAgentArrayIdx],
                 abatement_cost_all_regions[kAgentArrayIdx],
-                production_all_regions[kAgentArrayIdx]);
+                production_all_regions[kAgentArrayIdx],
+                private_goods_scale_factor[kAgentArrayIdx],
+                activity_timestep[kEnvId]);
 
             // float tmp = gross_output_all_regions[kAgentArrayIdx];
             // int tmp1 = int(tmp * 100 + 0.5);
@@ -1725,6 +1749,7 @@ extern "C"
                 minimum_mitigation_rate_all_regions,
                 mitigation_cost_all_regions,
                 mitigation_rate_all_regions,
+                private_goods_scale_factor,
                 production_all_regions,
                 production_factor_all_regions,
                 promised_mitigation_rate,
@@ -1756,6 +1781,7 @@ extern "C"
                 minimum_mitigation_rate_all_regions_norm,
                 mitigation_cost_all_regions_norm,
                 mitigation_rate_all_regions_norm,
+                private_goods_scale_factor_norm,
                 production_all_regions_norm,
                 production_factor_all_regions_norm,
                 promised_mitigation_rate_norm,
@@ -1850,6 +1876,7 @@ extern "C"
         const float *xscale_2,
         const float *xsigma_0,
         const float *xtheta_2,
+        const float *xb_0,
         float *abatement_cost_all_regions,
         int *activity_timestep,
         float *capital_all_regions,
@@ -1871,6 +1898,7 @@ extern "C"
         float *minimum_mitigation_rate_all_regions,
         float *mitigation_cost_all_regions,
         float *mitigation_rate_all_regions,
+        float *private_goods_scale_factor,
         float *production_all_regions,
         float *production_factor_all_regions,
         float *promised_mitigation_rate,
@@ -1906,6 +1934,7 @@ extern "C"
         float minimum_mitigation_rate_all_regions_norm,
         float mitigation_cost_all_regions_norm,
         float mitigation_rate_all_regions_norm,
+        float private_goods_scale_factor_norm,
         float production_all_regions_norm,
         float production_factor_all_regions_norm,
         float promised_mitigation_rate_norm,
@@ -2093,6 +2122,7 @@ extern "C"
                     minimum_mitigation_rate_all_regions,
                     mitigation_cost_all_regions,
                     mitigation_rate_all_regions,
+                    private_goods_scale_factor,
                     production_all_regions,
                     production_factor_all_regions,
                     promised_mitigation_rate,
@@ -2124,6 +2154,7 @@ extern "C"
                     minimum_mitigation_rate_all_regions_norm,
                     mitigation_cost_all_regions_norm,
                     mitigation_rate_all_regions_norm,
+                    private_goods_scale_factor_norm,
                     production_all_regions_norm,
                     production_factor_all_regions_norm,
                     promised_mitigation_rate_norm,
@@ -2184,6 +2215,7 @@ extern "C"
                     minimum_mitigation_rate_all_regions,
                     mitigation_cost_all_regions,
                     mitigation_rate_all_regions,
+                    private_goods_scale_factor,
                     production_all_regions,
                     production_factor_all_regions,
                     promised_mitigation_rate,
@@ -2215,6 +2247,7 @@ extern "C"
                     minimum_mitigation_rate_all_regions_norm,
                     mitigation_cost_all_regions_norm,
                     mitigation_rate_all_regions_norm,
+                    private_goods_scale_factor_norm,
                     production_all_regions_norm,
                     production_factor_all_regions_norm,
                     promised_mitigation_rate_norm,
@@ -2305,6 +2338,7 @@ extern "C"
                 xT_AT_0,
                 xT_LO_0,
                 xK_0,
+                xb_0,
                 abatement_cost_all_regions,
                 activity_timestep,
                 capital_all_regions,
@@ -2324,6 +2358,7 @@ extern "C"
                 minimum_mitigation_rate_all_regions,
                 mitigation_cost_all_regions,
                 mitigation_rate_all_regions,
+                private_goods_scale_factor,
                 production_all_regions,
                 production_factor_all_regions,
                 promised_mitigation_rate,
@@ -2359,6 +2394,7 @@ extern "C"
                 minimum_mitigation_rate_all_regions_norm,
                 mitigation_cost_all_regions_norm,
                 mitigation_rate_all_regions_norm,
+                private_goods_scale_factor_norm,
                 production_all_regions_norm,
                 production_factor_all_regions_norm,
                 promised_mitigation_rate_norm,
