@@ -275,6 +275,7 @@ class Rice:
             "mitigation_cost_all_regions",
             "damages_all_regions",
             "abatement_cost_all_regions",
+            "historical_abatement_cost_all_regions",
             "utility_all_regions",
             "social_welfare_all_regions",
             "reward_all_regions",
