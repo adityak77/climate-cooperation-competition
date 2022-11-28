@@ -84,10 +84,11 @@ def get_abatement_cost(mitigation_rate, mitigation_cost, theta_2):
     return mitigation_cost * pow(mitigation_rate, theta_2)
 
 
-def get_gross_output(damages, abatement_cost, production):
+def get_gross_output(damages, abatement_cost, production, private_goods_scale_factor, timestep):
     """Compute the gross production output, taking into account
     damages and abatement cost."""
-    return damages * (1 - abatement_cost) * production
+    private_goods = private_goods_scale_factor * np.sqrt(timestep)
+    return damages * (1 - abatement_cost) * production + private_goods * abatement_cost * production
 
 
 def get_investment(savings, gross_output):

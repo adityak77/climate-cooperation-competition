@@ -78,9 +78,13 @@ extern "C"
     __device__ float get_gross_output(
         float damages,
         float abatement_cost,
-        float production)
+        float production,
+        float private_goods_scale_factor,
+        int timestep)
     {
-        return damages * (1 - abatement_cost) * production;
+        float private_goods = private_goods_scale_factor * float(sqrt(double(timestep)));
+        return damages * (1 - abatement_cost) * production + 
+               private_goods * abatement_cost * production;
     }
 
     __device__ float get_investment(
@@ -1184,6 +1188,7 @@ extern "C"
         const int *xa_3,
         const float *xdelta_K,
         const float *xalpha,
+        const float *xb_0,
         const float *xrho,
         const int *xL_0,
         const float *xL_a,
@@ -1432,7 +1437,9 @@ extern "C"
             gross_output_all_regions[kAgentArrayIdx] = get_gross_output(
                 damages_all_regions[kAgentArrayIdx],
                 abatement_cost_all_regions[kAgentArrayIdx],
-                production_all_regions[kAgentArrayIdx]);
+                production_all_regions[kAgentArrayIdx],
+                xb_0[kAgentId],
+                activity_timestep[kEnvId]);
 
             // float tmp = gross_output_all_regions[kAgentArrayIdx];
             // int tmp1 = int(tmp * 100 + 0.5);
@@ -1861,6 +1868,7 @@ extern "C"
         const float *xa_2,
         const int *xa_3,
         const float *xalpha,
+        const float *xb_0,
         const float *xdelta_a,
         const float *xdelta_K,
         const float *xdelta_ir,
@@ -2316,6 +2324,7 @@ extern "C"
                 xa_3,
                 xdelta_K,
                 xalpha,
+                xb_0,
                 xrho,
                 xL_0,
                 xL_a,
