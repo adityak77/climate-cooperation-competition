@@ -10,12 +10,8 @@ sys.path = [os.path.join(_ROOT, "/scripts")] + sys.path
 
 from desired_outputs import desired_outputs
 from importlib import reload
-from codecarbon import EmissionsTracker
 from opt_helper import save, load, plot_training_curve, plot_result
 
-
-# tracker = EmissionsTracker()
-# tracker.start()
 
 device = 'gpu' # 'gpu'
 
@@ -98,4 +94,3 @@ plot_result("global_temperature",
             nego_on=nego_on_ts, 
             k=0)
 
-# tracker.stop()
