@@ -50,7 +50,7 @@ _RICE_CONSTANT:
   xsigma_0: 0.3503 # e0/(q0(1-mu0)) in EI emission intensity at the starting point
   xg_sigma: 0.0025 # 0.0152 # 0.0025 in EI control the rate of mitigation larger->reduce more emission
   xdelta_sigma: 0.1 # 0.01 in EI control the rate of mitigation larger->reduce less emission
-  xp_b: 550 # 550 # in Eq 2 (estimate of the cost of mitigation)  represents the price of a backstop technology that can remove carbon dioxide from the atmosphere
+  xp_b: 550. # 550 # in Eq 2 (estimate of the cost of mitigation)  represents the price of a backstop technology that can remove carbon dioxide from the atmosphere
   xdelta_pb: 0.0 # 0.001 # 0.025 # in Eq 2 control the how the cost of mitigation change through time larger->cost less as time goes by
   xdelta_ir: 0.04 # control how the cost of mitigation changes w.r.t. abatement cost
   xscale_1: 0.030245527 # in Eq 29 Nordhaus scaled cost function param
