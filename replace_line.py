@@ -4,7 +4,7 @@ import numpy as np
 
 # only need to change below
 dir_path = 'region_yamls'
-prefix = 'xa_2'
+prefix = 'xp_b'
 
 def random_generator_a1():
     mu = 0.002
@@ -34,10 +34,18 @@ def random_generator_a2_danger():
 
     return val
 
+def random_generator_pb():
+    mu = 550
+    sigma = 200 # hehe
+    val = max(0, np.random.normal(mu, sigma))
+
+    return val
+
 
 generator_dicts = {
                     'xa_1' : random_generator_a1,
-                    'xa_2' : random_generator_a2
+                    'xa_2' : random_generator_a2,
+                    'xp_b' : random_generator_pb,
                   }
 
 
