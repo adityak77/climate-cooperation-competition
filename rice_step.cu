@@ -11,16 +11,21 @@ extern "C"
 {
 
     // Device helper functions for the environment dynamics
+    // eddieli: To switch on Hale's increasing returns, switch
+    // delta_pb = 0
     __device__ float get_mitigation_cost(
         float p_b,
         float theta_2,
         float delta_pb,
         int timestep,
+        float delta_ir,
+        float global_historical_abatement_cost,
         float intensity)
     {
         return p_b /
                (1000 * theta_2) *
                pow(1 - delta_pb, timestep - 1) *
+               pow(1 - delta_ir, global_historical_abatement_cost) *
                intensity;
     }
 
@@ -1196,6 +1201,7 @@ extern "C"
         const float *xdelta_sigma,
         const int *xp_b,
         const float *xdelta_pb,
+        const float *xdelta_ir,
         const float *xscale_1,
         const float *xscale_2,
         const float *xT_AT_0,
@@ -1213,6 +1219,7 @@ extern "C"
         float *global_land_emissions,
         float *global_temperature,
         float *gross_output_all_regions,
+        float *historical_abatement_cost_all_regions,
         float *intensity_all_regions,
         float *investment_all_regions,
         float *labor_all_regions,
@@ -1248,6 +1255,7 @@ extern "C"
         float global_land_emissions_norm,
         float global_temperature_norm,
         float gross_output_all_regions_norm,
+        float historical_abatement_cost_all_regions_norm,
         float intensity_all_regions_norm,
         float investment_all_regions_norm,
         float labor_all_regions_norm,
@@ -1382,12 +1390,22 @@ extern "C"
                     (kNumDiscreteActionLevels);
             }
 
+            float global_historical_abatement_cost = 0.;
+            for (int region_id = 0; region_id < kNumAgents; region_id++)
+              {
+                int feature_idx = kEnvId * kNumAgents + region_id;
+                global_historical_abatement_cost +=
+                  historical_abatement_cost_all_regions[feature_idx];
+              }
+
             mitigation_cost_all_regions[kAgentArrayIdx] =
                 get_mitigation_cost(
                     xp_b[kAgentId],
                     xtheta_2[kAgentId],
                     xdelta_pb[kAgentId],
                     activity_timestep[kEnvId],
+                    xdelta_ir[kAgentId],
+                    global_historical_abatement_cost,
                     intensity_all_regions[kAgentArrayIdx]);
 
             const int kTArrayIdxOffset = kEnvId * global_temperature_len;
@@ -1402,6 +1420,13 @@ extern "C"
                 mitigation_rate_all_regions[kAgentArrayIdx],
                 mitigation_cost_all_regions[kAgentArrayIdx],
                 xtheta_2[kAgentId]);
+
+            // Don't update this until mitigation cost is calculated
+            // for all regions
+            __syncthreads();
+
+            historical_abatement_cost_all_regions[kAgentArrayIdx] +=
+              abatement_cost_all_regions[kAgentArrayIdx];
 
             production_all_regions[kAgentArrayIdx] = get_production(
                 production_factor_all_regions[kAgentArrayIdx],
@@ -1846,6 +1871,7 @@ extern "C"
         const float *xb_0,
         const float *xdelta_a,
         const float *xdelta_K,
+        const float *xdelta_ir,
         const float *xdelta_pb,
         const float *xdelta_sigma,
         const float *xg_a,
@@ -1872,6 +1898,7 @@ extern "C"
         float *global_land_emissions,
         float *global_temperature,
         float *gross_output_all_regions,
+        float *historical_abatement_cost_all_regions,
         float *intensity_all_regions,
         float *investment_all_regions,
         float *labor_all_regions,
@@ -1907,6 +1934,7 @@ extern "C"
         float global_land_emissions_norm,
         float global_temperature_norm,
         float gross_output_all_regions_norm,
+        float historical_abatement_cost_all_regions_norm,
         float intensity_all_regions_norm,
         float investment_all_regions_norm,
         float labor_all_regions_norm,
@@ -2309,6 +2337,7 @@ extern "C"
                 xdelta_sigma,
                 xp_b,
                 xdelta_pb,
+                xdelta_ir,
                 xscale_1,
                 xscale_2,
                 xT_AT_0,
@@ -2326,6 +2355,7 @@ extern "C"
                 global_land_emissions,
                 global_temperature,
                 gross_output_all_regions,
+                historical_abatement_cost_all_regions,
                 intensity_all_regions,
                 investment_all_regions,
                 labor_all_regions,
@@ -2361,6 +2391,7 @@ extern "C"
                 global_land_emissions_norm,
                 global_temperature_norm,
                 gross_output_all_regions_norm,
+                historical_abatement_cost_all_regions_norm,
                 intensity_all_regions_norm,
                 investment_all_regions_norm,
                 labor_all_regions_norm,
