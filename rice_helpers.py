@@ -12,6 +12,7 @@ import os
 
 import numpy as np
 import yaml
+from filelock import FileLock
 
 _SMALL_NUM = 1e-0  # small number added to handle consumption blow-up
 
@@ -39,6 +40,10 @@ def set_rice_params(yamls_folder=None):
     rice_params = []
     for file in yaml_files:
         rice_params.append(read_yaml_data(os.path.join(yamls_folder, file)))
+
+    lock = FileLock(os.path.join(yamls_folder, "trainer.lock"))
+    lock.release()
+    print("[INFO] Released file lock")
 
     # Overwrite rice params
     num_regions = len(rice_params)
