@@ -353,6 +353,7 @@ def plot_fig_with_bounds(
     list_of_dict_off=None,
     list_of_dict_on=None,
     mean_std_off=None,
+    mean_std_on=None,
     title=None,
     idx=0,
     x_label="year",
@@ -428,7 +429,7 @@ def plot_fig_with_bounds(
             plt.plot(
                 year,
                 mean_off[variable][..., idx],
-                # label="no negotiation",
+                label="Vanilla RICE-N",
                 linestyle="--",
                 color=line_colors[0],
             )
@@ -466,6 +467,42 @@ def plot_fig_with_bounds(
                 year,
                 lower_on[variable][..., idx][::skips],
                 upper_on[variable][..., idx][::skips],
+                color=region_colors[1],
+                alpha=0.5,
+            )
+            
+    if mean_std_on is not None:
+        n = 1.96
+        mean_off, std_dict = mean_std_on["mean"], mean_std_on["std"]
+        upper_off = {k: mean_off[k] + n * std_dict[k] for k in mean_off.keys()}
+        lower_off = {k: mean_off[k] - n * std_dict[k] for k in mean_off.keys()}
+        if idx == -1:
+            plt.plot(
+                year,
+                mean_off[variable][...],
+                label="no negotiation",
+                linestyle="--",
+                color=line_colors[0],
+            )
+            plt.fill_between(
+                year,
+                lower_off[variable][...],
+                upper_off[variable][...],
+                color=region_colors[0],
+                alpha=0.5,
+            )            
+        else:
+            plt.plot(
+                year,
+                mean_off[variable][..., idx],
+                label="Catalytic Cooperation",
+                linestyle="--",
+                color=line_colors[1],
+            )
+            plt.fill_between(
+                year,
+                lower_off[variable][..., idx],
+                upper_off[variable][..., idx],
                 color=region_colors[1],
                 alpha=0.5,
             )
