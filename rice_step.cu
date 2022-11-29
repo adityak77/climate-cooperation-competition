@@ -82,9 +82,11 @@ extern "C"
         float private_goods_scale_factor,
         int timestep)
     {
-        float private_goods = private_goods_scale_factor * float(sqrt(double(timestep)));
+        // float private_goods = private_goods_scale_factor * float(sqrt(double(timestep)));
+        float private_goods = private_goods_scale_factor * float(sqrt(double(abatement_cost * production)));
         return damages * (1 - abatement_cost) * production + 
-               private_goods * abatement_cost * production;
+          private_goods;
+               // private_goods * abatement_cost * production;
     }
 
     __device__ float get_investment(
