@@ -7,7 +7,7 @@
 
 # Checkpoint saving setting
 saving:
-    metrics_log_freq: 100 # how often (in iterations) to log (and print) the metrics
+    metrics_log_freq: 5 # how often (in iterations) to log (and print) the metrics
     model_params_save_freq: 1000 # how often (in iterations) to save the model parameters
     basedir: "/tmp" # base folder used for saving
     name: "rice" # experiment name
@@ -28,19 +28,32 @@ env:
 policy:
     regions:
         to_train: True # flag indicating whether the model needs to be trained
-        algorithm: "A2C" # algorithm used to train the policy
+        # algorithm: "A2C" # algorithm used to train the policy
+        algorithm: "PPO"
         vf_loss_coeff: 0.1 # loss coefficient schedule for the value function loss
         entropy_coeff: # loss coefficient schedule for the entropy loss
         # piecewise linear, specified as (timestep, value)
-            - [0, 0.5]
-            - [1000000, 0.1]
-            - [5000000, 0.05]
+            # - [0, 0.01]
+            # - [100000, 0.001]
+            # - [300000, 0.0005]
+            # - [1000000, 0.0]
+            - [0, 0.0005]
+            - [5000000, 0.00025]
+            - [8000000, 0.0]
+            # # - [5000000, 0.05]
+            # - [0, 0.05]
         clip_grad_norm: True # flag indicating whether to clip the gradient norm or not
         max_grad_norm: 0.5 # when clip_grad_norm is True, the clip level
         normalize_advantage: False # flag indicating whether to normalize advantage or not
         normalize_return: False # flag indicating whether to normalize return or not
         gamma: 0.92 # discount factor
         lr: 0.0005 # learning rate
+
+        # PPO params
+        num_sgd_iter: 20
+        sgd_minibatch_size: 120
+        kl_target: 0.01
+
         model: # policy model settings
             type: "fully_connected" # model type
             fc_dims: [256, 256] # dimension(s) of the fully connected layers as a list

@@ -20,6 +20,7 @@ import yaml
 from desired_outputs import desired_outputs
 from opt_helper import get_mean_std
 from fixed_paths import PUBLIC_REPO_DIR
+from trainer import PatchedTrainer
 
 sys.path.append(PUBLIC_REPO_DIR)
 
@@ -231,7 +232,8 @@ def trainer(
     )
     outputs_ts = [
         fetch_episode_states(trainer_object, desired_outputs, env_id=i)
-        for i in range(num_envs)
+        # for i in range(num_envs)
+        for i in range(100)
     ]
     for i in range(len(outputs_ts)):
         outputs_ts[i]["global_consumption"] = np.sum(
@@ -241,11 +243,11 @@ def trainer(
             outputs_ts[i]["gross_output_all_regions"], axis=-1
         )
     if not output_all_envs:
-        outputs_ts, _ = get_mean_std(outputs_ts)
+        outputs_ts, outputs_std = get_mean_std(outputs_ts)
     # Shut off the trainer gracefully
     # -------------------------------
     trainer_object.graceful_close()
-    return trainer_object, outputs_ts
+    return trainer_object, outputs_ts, outputs_std
 
 
 if __name__ == "__main__":
