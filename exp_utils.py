@@ -53,7 +53,7 @@ def sample_and_train(exp_name, tag, defaults, overrides={}):
         os.makedirs(os.path.join("experiments", exp_name))
 
     print("[INFO] Starting training...")
-    _, outputs_mean, outputs_std = trainer(negotiation_on=0,
+    _, outputs_mean, outputs_std, submission_file = trainer(negotiation_on=0,
                    num_envs=500,
                    train_batch_size=10000,
                    num_episodes=500000,
@@ -69,6 +69,7 @@ def sample_and_train(exp_name, tag, defaults, overrides={}):
         "overrides": overrides,
         "mean": outputs_mean,
         "std": outputs_std,
+        "submission_file": submission_file,
     }, os.path.join("experiments", exp_name, f"{tag}.pkl"))
 
 def grid_search(exp_name, defaults, param, mu_or_sigma, low, high, amt, overrides={}):

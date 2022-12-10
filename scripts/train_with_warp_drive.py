@@ -17,6 +17,7 @@ import subprocess
 import sys
 import numpy as np
 import yaml
+from create_submission_zip import prepare_submission
 from desired_outputs import desired_outputs
 from opt_helper import get_mean_std
 from fixed_paths import PUBLIC_REPO_DIR
@@ -222,14 +223,15 @@ def trainer(
 
     # Create a (zipped) submission file
     # ---------------------------------
-    subprocess.call(
-        [
-            "python",
-            os.path.join(PUBLIC_REPO_DIR, "scripts", "create_submission_zip.py"),
-            "--results_dir",
-            trainer_object.save_dir,
-        ]
-    )
+    # subprocess.call(
+    #     [
+    #         "python",
+    #         os.path.join(PUBLIC_REPO_DIR, "scripts", "create_submission_zip.py"),
+    #         "--results_dir",
+    #         trainer_object.save_dir,
+    #     ]
+    # )
+    submission_file = prepare_submission(results_dir=trainer_object.save_dir)
     outputs_ts = [
         fetch_episode_states(trainer_object, desired_outputs, env_id=i)
         # for i in range(num_envs)
@@ -247,7 +249,7 @@ def trainer(
     # Shut off the trainer gracefully
     # -------------------------------
     trainer_object.graceful_close()
-    return trainer_object, outputs_ts, outputs_std
+    return trainer_object, outputs_ts, outputs_std, submission_file
 
 
 if __name__ == "__main__":
