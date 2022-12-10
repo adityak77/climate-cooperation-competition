@@ -30,7 +30,7 @@ VANILLA_RICEN = {
 def get_seed():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--seed", "-s", type=int, default=100, help-"Seed for reproducibility"
+        "--seed", "-s", type=int, default=100, help="Seed for reproducibility"
     )
     args = parser.parse_args()
 
@@ -41,10 +41,10 @@ if __name__ == '__main__':
     print(f"Seeded with {seed}")
 
     # Vanilla train
-    sample_and_train('vanilla', 1, DEFAULTS, VANILLA_RICEN, seed=seed)
+    sample_and_train('vanilla', seed, DEFAULTS, VANILLA_RICEN, seed=seed)
 
     # Best model
-    sample_and_train('best', 1, DEFAULTS, BEST_MODEL, seed=seed)
+    # sample_and_train('best', seed, DEFAULTS, BEST_MODEL, seed=seed)
 
     # Private goods
     grid_search("b_0", DEFAULTS, "xb_0", "mu", 0.0, 0.6, amt=12, seed=seed)
@@ -53,8 +53,8 @@ if __name__ == '__main__':
     grid_search("ir", DEFAULTS, "xdelta_ir", "mu", 0.0, 0.4, amt=12, seed=seed)
 
     # Damage heterogeneity
-    grid_search("damage", DEFAULTS, "xa_2", "sigma", 0.0, 0.08, amt=12, overrides={"xa_2": Distribution(mu=0.015, sigma=0.01)}, seed=seed)
+    # grid_search("damage", DEFAULTS, "xa_2", "sigma", 0.0, 0.08, amt=12, overrides={"xa_2": Distribution(mu=0.015, sigma=0.01)}, seed=seed)
 
     # Mitigation cost heterogeneity
-    grid_search("mitigation", DEFAULTS, "xp_b", "sigma", 0, 500, amt=12, seed=seed)
+    # grid_search("mitigation", DEFAULTS, "xp_b", "sigma", 0, 500, amt=12, seed=seed)
 

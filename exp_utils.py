@@ -92,7 +92,7 @@ def grid_search(exp_name, defaults, param, mu_or_sigma, low, high, amt, override
     steps = np.linspace(low, high, num=amt)
     overrides = overrides.copy()
     for step in steps:
-        tag = f"{param}_{mu_or_sigma}_{step}"
+        tag = f"{param}_{mu_or_sigma}_{step}_seed{seed}"
         default = defaults[param]
         if mu_or_sigma == 'mu':
             overrides[param] = Distribution(mu=step, sigma=default.sigma)
