@@ -8,6 +8,8 @@ sys.path = [os.path.join(_ROOT, "/scripts")] + sys.path
 
 import fileinput
 import numpy as np
+import random
+import torch
 from collections import namedtuple
 from filelock import FileLock
 
@@ -18,6 +20,15 @@ from opt_helper import save, load, plot_training_curve, plot_result
 REGION_YAMLS_DIR = 'region_yamls'
 
 Distribution = namedtuple('Distribution', ['mu', 'sigma'])
+
+def seed_everything(seed):
+    if seed is None:
+        return
+
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
 def _initialize_params(defaults, overrides):
     params = defaults.copy()
@@ -43,7 +54,9 @@ def _initialize_params(defaults, overrides):
             if not found:
                 print(line.rstrip())
 
-def sample_and_train(exp_name, tag, defaults, overrides={}):
+def sample_and_train(exp_name, tag, defaults, overrides={}, seed=None):
+    seed_everything(seed)
+
     print("[INFO] Sampling new parameters...")
     print(f"Training {exp_name}/{tag}")
     print(overrides)
@@ -72,7 +85,7 @@ def sample_and_train(exp_name, tag, defaults, overrides={}):
         "submission_file": submission_file,
     }, os.path.join("experiments", exp_name, f"{tag}.pkl"))
 
-def grid_search(exp_name, defaults, param, mu_or_sigma, low, high, amt, overrides={}):
+def grid_search(exp_name, defaults, param, mu_or_sigma, low, high, amt, overrides={}, seed=None):
     assert mu_or_sigma in ['mu', 'sigma']
     print(f"[INFO] Grid searching {param}'s {mu_or_sigma} from {low} to {high} with {amt} steps")
 
@@ -85,5 +98,5 @@ def grid_search(exp_name, defaults, param, mu_or_sigma, low, high, amt, override
             overrides[param] = Distribution(mu=step, sigma=default.sigma)
         else:
             overrides[param] = Distribution(mu=default.mu, sigma=step)
-        sample_and_train(exp_name, tag, defaults, overrides)
+        sample_and_train(exp_name, tag, defaults, overrides, seed=seed)
 

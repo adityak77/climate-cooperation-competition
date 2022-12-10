@@ -184,6 +184,7 @@ def trainer(
     model_params_save_freq=5000,
     desired_outputs=desired_outputs,
     output_all_envs=False,
+    seed=None,
 ):
     """
     Main function to run the trainer.
@@ -211,7 +212,7 @@ def trainer(
     run_configuration["saving"]["model_params_save_freq"] = model_params_save_freq
     # run_configuration trainer
     # --------------
-    trainer_object, _ = create_trainer(run_config=run_configuration)
+    trainer_object, _ = create_trainer(run_config=run_configuration, seed=seed)
 
     # Copy the source files into the results directory
     # ------------------------------------------------
