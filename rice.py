@@ -255,7 +255,7 @@ class Rice:
             timestep=self.timestep,
             norm=1e-1,
         )
-
+        
         for key in [
             "global_exogenous_emissions",
             "global_land_emissions",
@@ -285,6 +285,7 @@ class Rice:
             "mitigation_cost_all_regions",
             "damages_all_regions",
             "abatement_cost_all_regions",
+            "historical_abatement_cost_all_regions",
             "utility_all_regions",
             "social_welfare_all_regions",
             "reward_all_regions",
@@ -829,7 +830,7 @@ class Rice:
                 const["xgamma"],
             )
 
-            gross_output = get_gross_output_increasing_returns(damages, abatement_cost, production, mitigation_returns)
+            gross_output = get_gross_output(damages, abatement_cost, production, const["xb_0"], self.timestep)
             gov_balance_prev = gov_balance_prev * (1 + self.balance_interest_rate)
             investment = get_investment(savings, gross_output)
 

@@ -49,6 +49,8 @@ def prepare_submission(results_dir=None):
     print("NOTE: The submission file is created at:", submission_file + ".zip")
     shutil.rmtree(results_dir_copy)
 
+    return submission_file + ".zip"
+
 
 if __name__ == "__main__":
     prepare_submission(results_dir=get_results_dir()[0])

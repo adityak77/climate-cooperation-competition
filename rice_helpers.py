@@ -12,6 +12,7 @@ import os
 
 import numpy as np
 import yaml
+from filelock import FileLock
 
 _SMALL_NUM = 1e-0  # small number added to handle consumption blow-up
 
@@ -39,6 +40,10 @@ def set_rice_params(yamls_folder=None):
     rice_params = []
     for file in yaml_files:
         rice_params.append(read_yaml_data(os.path.join(yamls_folder, file)))
+
+    lock = FileLock(os.path.join(yamls_folder, "trainer.lock"))
+    lock.release()
+    print("[INFO] Released file lock")
 
     # Overwrite rice params
     num_regions = len(rice_params)
@@ -84,10 +89,11 @@ def get_abatement_cost(mitigation_rate, mitigation_cost, theta_2):
     return mitigation_cost * pow(mitigation_rate, theta_2)
 
 
-def get_gross_output(damages, abatement_cost, production):
+def get_gross_output(damages, abatement_cost, production, private_goods_scale_factor, timestep):
     """Compute the gross production output, taking into account
     damages and abatement cost."""
-    return damages * (1 - abatement_cost) * production
+    private_goods = private_goods_scale_factor * np.sqrt(timestep)
+    return damages * (1 - abatement_cost) * production + private_goods * abatement_cost * production
 
 def get_gross_output_increasing_returns(damages, abatement_cost, production, mitigation_returns):
     """Compute the gross production output, taking into account
