@@ -33,8 +33,6 @@ class Game:
         private_cost = self.mu * 3 * self.k[player] * M * (self.gamma ** M)
         private_benefit = self.mu * self.b[player] * M * (1 + t / 10)
 
-        print(public_benefit, private_cost, private_benefit)
-
         return public_benefit - private_cost + private_benefit + 3
 
     # def _get_payoff_no_mitigate(self, player: int, N: int, M: int, t: int) -> float:
@@ -92,7 +90,7 @@ if __name__ == "__main__":
     mu = 1
     game = Game(d, k, b, mu, max_timesteps=1)
     root = game.get_root()
-    print(root)
+
     solver = Solver(root)
     solution = solver.solve()
     print(solution[0])
@@ -108,9 +106,27 @@ if __name__ == "__main__":
     mu = 1
     game = Game(d, k, b, mu, max_timesteps=1)
     root = game.get_root()
-    print(root)
+
     solver = Solver(root)
     solution = solver.solve()
     print(solution[0])
     print(solution[1])
     print(solution[2])
+
+    print('====================')
+
+    # simulate private benefits + multiple time steps (includes increasing returns)
+    d = [0.5, 0.5]
+    k = [0.9, 0.9]
+    b = [0.1, 0.1]
+    mu = 1
+    game = Game(d, k, b, mu, max_timesteps=5)
+    root = game.get_root()
+    # print(root)
+    solver = Solver(root)
+    solution = solver.solve()
+    
+    fraction_mitigate = sum([1 - elem[1] for elem in solution[2]]) / len(solution[2])
+    
+    print('Equilibrium path actions', [elem[1] for elem in solution[2]])
+    print(fraction_mitigate)
