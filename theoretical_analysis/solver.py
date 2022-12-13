@@ -15,6 +15,9 @@ class Node:
     # the ith action
     actions: Tuple[Union["Node", Payoff]]
 
+    def __repr__(self):
+        return f"Node(info={self.info}, player={self.player})"
+
 
 class Solver:
     def __init__(self, game_root: Node):
@@ -29,7 +32,7 @@ class Solver:
 
         # [max] returns the first encountered item in case of a tie. We want to break ties in favor of
         # mitigation, so we reverse the subtree_sols
-        best_action, (payoff, path) = max(subtree_sols[::-1], key=lambda x: x[1][0][subtree.player])
+        best_action, (payoff, path) = max(subtree_sols, key=lambda x: x[1][0][subtree.player])
 
         self.strategy[subtree] = best_action
 
